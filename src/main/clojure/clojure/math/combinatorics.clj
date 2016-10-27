@@ -13,7 +13,8 @@ for a longer description.)"
      :core.typed {:features #{:runtime-infer}}}
   clojure.math.combinatorics
   (:refer-clojure :exclude [update])
-  (:require [clojure.core.typed :as t]))
+  (:require [clojure.core.typed :as t]
+            [clojure.spec :as s]))
 
 (comment
 "  
