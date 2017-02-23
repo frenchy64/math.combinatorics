@@ -106,7 +106,7 @@ to write our own version that considers the empty-list to be distinct"
 (defn- index-combinations
   [n cnt]
   (lazy-seq
-    (let [c (vec (cons nil (for [j (range 1 (inc n))] (+ j cnt (- (inc n)))))),
+    (let [c (vec (cons 0 (for [j (range 1 (inc n))] (+ j cnt (- (inc n)))))),
           iter-comb
           (fn iter-comb [c j]
             (if (> j n) nil

@@ -6,8 +6,8 @@
   :source-paths ["src/main/clojure"]
   :test-paths ["src/test/clojure"]
   :global-vars {*warn-on-reflection* true}
-  :dependencies [[org.clojure/clojure "1.9.0-alpha13"]
-                 [org.clojure/core.typed "0.3.29-SNAPSHOT"]]
+  :dependencies [[org.clojure/clojure "1.9.0-alpha14"]
+                 [org.clojure/core.typed "0.3.33-SNAPSHOT"]]
   :injections [(require 'clojure.core.typed)
                (clojure.core.typed/install
                  #{:load})]
