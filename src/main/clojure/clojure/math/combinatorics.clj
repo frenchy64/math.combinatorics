@@ -117,9 +117,11 @@ to write our own version that considers the empty-list to be distinct"
                       (recur (assoc c (dec j) (dec (c j))) (dec j)))))))),
           step
           (fn step [c j]
-            (cons (rseq (subvec c 1 (inc n)))
-                  (lazy-seq (let [next-step (iter-comb c j)]
-                              (when next-step (step (next-step 0) (next-step 1)))))))]
+            (let [rs (rseq (subvec c 1 (inc n)))]
+              (assert rs)
+              (cons rs
+                    (lazy-seq (let [next-step (iter-comb c j)]
+                                (when next-step (step (next-step 0) (next-step 1))))))))]
       (step c 1))))
 
 ;; Helper function for bounded-distributions
