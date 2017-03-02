@@ -71,11 +71,16 @@
 
 (deftest test-cartesian-product
   (are [x y] (= x y)
-       (cartesian-product [1 2] [3 4]) '((1 3) (1 4) (2 3) (2 4))))
+       (cartesian-product [1 2] [3 4]) '((1 3) (1 4) (2 3) (2 4))
+       (cartesian-product [1 2 3] [3 4 5]) '((1 3) (1 4) (1 5) (2 3) (2 4) (2 5) (3 3) (3 4) (3 5))))
 
 (deftest test-selections
   (are [x y] (= x y)
-       (selections [1 2] 3) '((1 1 1) (1 1 2) (1 2 1) (1 2 2) (2 1 1) (2 1 2) (2 2 1) (2 2 2))))
+       (selections [1 2] 3) '((1 1 1) (1 1 2) (1 2 1) (1 2 2) (2 1 1) (2 1 2) (2 2 1) (2 2 2))
+       (selections [1 2 3] 3) '((1 1 1) (1 1 2) (1 1 3) (1 2 1) (1 2 2) (1 2 3) (1 3 1) (1 3 2)
+                                (1 3 3) (2 1 1) (2 1 2) (2 1 3) (2 2 1) (2 2 2) (2 2 3) (2 3 1)
+                                (2 3 2) (2 3 3) (3 1 1) (3 1 2) (3 1 3) (3 2 1) (3 2 2) (3 2 3)
+                                (3 3 1) (3 3 2) (3 3 3))))
 
 (def lex-permutations @#'clojure.math.combinatorics/lex-permutations)
 
