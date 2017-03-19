@@ -9,3 +9,6 @@ clojure-contrib.jar
 clojure.jar
 clojure-contrib-src.jar
 target
+*.swp
+.lein*
+.nrepl-port

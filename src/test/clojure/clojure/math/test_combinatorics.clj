@@ -1,7 +1,13 @@
 (ns clojure.math.test-combinatorics
-  (:require [clojure.test.check])
+  (:require [clojure.test.check]
+            [clojure.spec.test :as stest])
   (:use clojure.test
         clojure.math.combinatorics))
+
+(defn activate-specs []
+  (stest/instrument 
+    (filter (comp #{'clojure.math.combinatorics} symbol namespace)
+            (stest/instrumentable-syms))))
 
 (deftest test-combinations
   (are [x y] (= x y)
