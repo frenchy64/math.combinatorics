@@ -10,11 +10,13 @@
 sequences for common combinatorial functions. (See the source code 
 for a longer description.)"
      :lang :core.typed
-     :core.typed {:features #{:runtime-infer}}}
+     :core.typed {:features #{:runtime-infer}}
+     }
   clojure.math.combinatorics
   (:refer-clojure :exclude [update])
   (:require [clojure.core.typed :as t]
-            [clojure.spec :as s]))
+            [clojure.spec :as s]
+            [clojure.spec.test :as stest]))
 
 (comment
 "  

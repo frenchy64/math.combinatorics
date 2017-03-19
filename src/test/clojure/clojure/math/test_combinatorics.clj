@@ -1,4 +1,5 @@
 (ns clojure.math.test-combinatorics
+  (:require [clojure.test.check])
   (:use clojure.test
         clojure.math.combinatorics))
 
