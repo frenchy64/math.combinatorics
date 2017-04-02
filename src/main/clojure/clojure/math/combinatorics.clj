@@ -10,7 +10,7 @@
 sequences for common combinatorial functions. (See the source code 
 for a longer description.)"
      :lang :core.typed
-     :core.typed {:features #{:runtime-infer}}
+     ;:core.typed {:features #{:runtime-infer}}
      }
   clojure.math.combinatorics
   (:refer-clojure :exclude [update])
@@ -22,21 +22,20 @@ for a longer description.)"
 (declare)
 (t/ann
   all-different?
-  [(t/Coll (t/U t/Int (t/Atom1 t/Int) ':a ':b Character)) :-> Boolean])
+  [(t/Coll t/Any) :-> Boolean])
 (t/ann
   bounded-distributions
   [(t/Vec t/Int) t/Int :-> (t/Coll (t/Vec '[t/Int t/Int t/Int]))])
+;;TODO fix local function
 (t/ann
+  ^:no-check
   cartesian-product
   (t/IFn
-    [(t/Vec t/Int)
-     (t/Vec t/Int)
-     (t/Vec t/Int)
+    [(t/Vec t/Int) *
      :->
-     (t/Coll (t/Coll t/Int))]
-    [(t/Vec t/Int) (t/Vec t/Int) :-> (t/Coll (t/Coll t/Int))]))
+     (t/U nil (t/Coll (t/Coll t/Int)))]))
 (t/ann
-  combinations
+  ^:no-check combinations
   [(t/Coll (t/U t/Int (t/Atom1 t/Int) Character))
    t/Int
    :->
@@ -46,24 +45,26 @@ for a longer description.)"
   [(t/Vec (t/U t/Int Character)) t/Int :-> t/Int])
 (t/ann
   count-combinations-from-frequencies
-  [(t/Map (t/U t/Int Character) t/Int) t/Int :-> t/Int])
+  [(t/Map t/Any t/Int) t/Int :-> t/Int])
 (t/ann
   count-combinations-unmemoized
   [(t/Vec (t/U t/Int Character)) t/Int :-> t/Int])
-(t/ann count-permutations [(t/Coll (t/U t/Int Character)) :-> t/Int])
+(t/ann count-permutations [(t/Coll t/Any) :-> t/Int])
 (t/ann
   count-permutations-from-frequencies
-  [(t/Map (t/U t/Int Character) t/Int) :-> t/Int])
+  (t/All [a] [(t/Map a t/Int) :-> t/Int]))
 (t/ann count-subsets [(t/Vec (t/U t/Int Character)) :-> t/Int])
 (t/ann
   count-subsets-unmemoized
   [(t/Vec (t/U t/Int Character)) :-> t/Int])
 (t/ann
+  ^:no-check
   dec-key
-  [(t/Map (t/U t/Int Character) t/Int)
-   (t/U t/Int Character)
-   :->
-   (t/Map (t/U t/Int Character) t/Int)])
+  (t/All [a]
+    [(t/Map a t/Int)
+     a
+     :->
+     (t/Map a t/Int)]))
 (t/ann
   distribute
   [(t/Vec t/Int)
@@ -75,16 +76,17 @@ for a longer description.)"
    (t/Vec '[t/Int t/Int t/Int])])
 (t/ann
   drop-permutations
-  [(t/Vec (t/U t/Int Character))
-   t/Int
-   :->
-   (t/Coll (t/Coll (t/U t/Int Character)))])
+  (t/All [a]
+    [(t/Coll a)
+     t/Int
+     :->
+     (t/Coll (t/Coll a))]))
 (t/ann expt-int [t/Int t/Int :-> t/Int])
 (t/ann factorial [t/Int :-> t/Int])
 (t/ann factorial-numbers [t/Int :-> (t/Coll t/Int)])
 (t/ann
   factorial-numbers-with-duplicates
-  [t/Int (t/Map t/Int t/Int) :-> (t/Vec t/Int)])
+  (t/All [a] [t/Int (t/Map a t/Int) :-> (t/Vec t/Int)]))
 (t/ann
   growth-strings-H
   (t/IFn
@@ -99,20 +101,15 @@ for a longer description.)"
 (t/ann index-combinations [t/Int t/Int :-> (t/Coll (t/Coll t/Int))])
 (t/ann index-remainder [(t/Coll t/Int) t/Int :-> '[t/Int t/Int]])
 (t/ann init [t/Int (t/U nil t/Int) :-> (t/Vec t/Int)])
-(t/ann initial-perm-numbers [(t/Map t/Int t/Int) :-> (t/Coll t/Int)])
-(t/ann iter-perm [(t/Vec t/Int) :-> (t/U nil (t/Vec t/Int))])
+(t/ann initial-perm-numbers [(t/Map t/Any t/Int) :-> (t/Coll t/Int)])
+(t/ann iter-perm (t/All [a] [(t/Vec (t/I a t/Num)) :-> (t/U nil (t/Vec (t/I a t/Num)))]))
 (t/ann
+  ^:no-check ;; FIXME issue with group-by annotation?
   lex-partitions-H
-  (t/IFn
-    [t/Int :-> (t/Coll (t/Coll (t/Vec t/Int)))]
-    [t/Int
-     ':min
-     t/Int
-     ':max
-     t/Int
-     :->
-     (t/Coll (t/Coll (t/Coll t/Int)))]))
-(t/ann lex-permutations [(t/Coll t/Int) :-> (t/Coll (t/Vec t/Int))])
+  [t/Int & :optional {:min t/Int :max t/Int}
+   :->
+   (t/Coll (t/Coll (t/Coll t/Int)))])
+(t/ann lex-permutations [(t/Coll t/Num) :-> (t/Coll (t/Vec t/Num))])
 (t/ann
   list-index
   [(t/Coll (t/U t/Int Character)) (t/U t/Int Character) :-> t/Int])
@@ -146,7 +143,7 @@ for a longer description.)"
    (t/U nil t/Int)
    :->
    (t/Coll (t/Coll (t/Map t/Int t/Int)))])
-(t/ann mult [t/Int t/Int :-> t/Int])
+(t/ann mult [t/Int * :-> t/Int])
 (t/ann
   multi-comb
   [(t/Vec (t/U t/Int Character))
@@ -154,6 +151,7 @@ for a longer description.)"
    :->
    (t/Coll (t/Coll (t/U t/Int Character)))])
 (t/ann
+  ^:no-check
   multi-perm
   [(t/Vec (t/U t/Int Character))
    :->
@@ -206,16 +204,19 @@ for a longer description.)"
   [(t/Map t/Int t/Int) t/Int t/Int :-> (t/Vec t/Int)])
 (t/ann
   nth-permutation
-  [(t/Coll (t/U t/Int Character))
-   t/Int
-   :->
-   (t/Vec (t/U t/Int Character))])
+  (t/All [a]
+    [(t/Coll a)
+     t/Int
+     :->
+     (t/Vec a)]))
 (t/ann
   nth-permutation-distinct
-  [(t/Coll t/Int) t/Int :-> (t/Vec t/Int)])
+  (t/All [a]
+    [(t/Coll (t/I t/Num a)) t/Int :-> (t/Vec (t/I t/Num a))]))
 (t/ann
   nth-permutation-duplicates
-  [(t/Coll t/Int) t/Int :-> (t/Vec t/Int)])
+  (t/All [a]
+    [(t/Coll (t/I t/Num a)) t/Int :-> (t/Vec (t/I t/Num a))]))
 (t/ann
   nth-subset
   [(t/Vec (t/U t/Int Character))
@@ -223,38 +224,21 @@ for a longer description.)"
    :->
    (t/Vec (t/U t/Int Character))])
 (t/ann
+  ^:no-check ;; don't support forwarding keyword arguments with apply
   partitions
-  (t/IFn
-    [(t/U nil (t/Coll t/Int)) :-> (t/Coll (t/Coll (t/Vec t/Int)))]
-    [(t/Coll t/Int)
-     ':min
-     t/Int
-     ':max
-     t/Int
-     :->
-     (t/Coll (t/Coll (t/Vec t/Int)))]))
+  [(t/U nil (t/Coll t/Int)) & :optional {:min t/Int :max t/Int}
+   :-> (t/Coll (t/Coll (t/Vec t/Int)))])
 (t/ann
+  ^:no-check ;; don't support forwarding keyword arguments with apply
   partitions-H
-  (t/IFn
-    [(t/U nil (t/Coll t/Int)) :-> (t/Coll (t/Coll (t/Vec t/Int)))]
-    [(t/Coll t/Int)
-     ':min
-     t/Int
-     ':max
-     t/Int
-     :->
-     (t/Coll (t/Coll (t/Vec t/Int)))]))
+  [(t/U nil (t/Coll t/Int)) & :optional {:min t/Int :max t/Int}
+   :->
+   (t/Coll (t/Coll (t/Vec t/Int)))])
 (t/ann
   partitions-M
-  (t/IFn
-    [(t/Coll t/Int)
-     ':min
-     t/Int
-     ':max
-     t/Int
-     :->
-     (t/Coll (t/Coll (t/Vec t/Int)))]
-    [(t/Coll t/Int) :-> (t/Coll (t/Coll (t/Vec t/Int)))]))
+  [(t/Coll t/Int) & :optional {:min t/Int :max t/Int}
+   :->
+   (t/Coll (t/Coll (t/Vec t/Int)))])
 (t/ann permutation-index [(t/Coll (t/U t/Int Character)) :-> t/Int])
 (t/ann
   permutation-index-distinct
@@ -263,21 +247,21 @@ for a longer description.)"
   permutation-index-duplicates
   [(t/Coll (t/U t/Int Character)) :-> t/Int])
 (t/ann
+  ^:no-check
   permutations
-  [(t/Coll (t/U t/Int ':a ':b Character))
-   :->
-   (t/Coll (t/Coll (t/U t/Int ':a ':b Character)))])
+  (t/All [a]
+    [(t/Coll a)
+     :->
+     (t/Coll (t/Coll a))]))
 (t/ann
   plus
-  (t/IFn
-    [t/Int t/Int t/Int t/Int t/Int t/Int t/Int :-> t/Int]
-    [t/Int t/Int t/Int t/Int t/Int t/Int :-> t/Int]
-    [t/Int t/Int :-> t/Int]))
-(t/ann remove-nth [(t/Coll t/Int) t/Int :-> (t/Vec t/Int)])
-(t/ann selections [(t/Vec t/Int) t/Int :-> (t/Coll (t/Coll t/Int))])
+  [t/Int * :-> t/Int])
+(t/ann remove-nth (t/All [a] [(t/Coll a) t/Int :-> (t/Vec a)]))
+(t/ann selections [(t/Vec t/Int) t/Int :-> (t/U nil (t/Coll (t/Coll t/Int)))])
 (t/ann
+  ^:no-check
   sorted-numbers?
-  [(t/Coll (t/U t/Int ':a ':b Character)) :-> Boolean])
+  [(t/Coll t/Any) :-> Boolean :filters {:then (is (t/Coll t/Num) 0)}])
 (t/ann
   subsets
   [(t/Coll (t/U t/Int (t/Atom1 t/Int) Character))
@@ -287,7 +271,7 @@ for a longer description.)"
 (t/ann update [(t/Vec t/Int) t/Int [t/Int :-> t/Int] :-> (t/Vec t/Int)])
 (t/ann
   vec-lex-permutations
-  [(t/U nil (t/Vec t/Int)) :-> (t/U nil (t/Coll (t/Vec t/Int)))])
+  (t/All [a] [(t/U nil (t/Vec (t/I a t/Num))) :-> (t/U nil (t/Coll (t/Vec (t/I a t/Num))))]))
 ;; End: Generated by clojure.core.typed - DO NOT EDIT
 (comment
 "  
@@ -408,7 +392,7 @@ to write our own version that considers the empty-list to be distinct"
   (loop [^{::t/ann (t/Vec '[t/Int t/Int t/Int])} distribution distribution
          ^{::t/ann t/Int} index index
          ^{::t/ann t/Int} already-distributed already-distributed]
-    (if (>= index (count m)) nil
+    (if (>= index (count m)) (assert nil)
       (let [quantity-to-distribute (- total already-distributed)
             mi (m index)]
         (if (<= quantity-to-distribute mi)
@@ -465,7 +449,7 @@ to write our own version that considers the empty-list to be distinct"
   (let [f (frequencies l),
         v (vec (distinct l)),
         domain (range (count v))
-        m (vec (for ^{::t/ann t/Int} [^{::t/ann t/Int} i domain] (f (v i))))
+        m (vec (for ^{::t/ann t/Int} [^{::t/ann t/Int} i domain] (t/cast t/Int (f (v i)))))
         qs (bounded-distributions m t)]
     (for ^{::t/ann (t/Coll (t/U t/Int Character))} [^{::t/ann (t/Vec '[t/Int t/Int t/Int])} q qs]
       (apply concat
@@ -478,7 +462,7 @@ to write our own version that considers the empty-list to be distinct"
   (let [v-items (vec (reverse items))]
     (if (zero? t) (list ())
       (let [cnt (count items)]
-        (cond (> t cnt) nil
+        (cond (> t cnt) (assert nil)
               (= t 1) (for ^{::t/ann (t/Coll (t/U t/Int (t/Atom1 t/Int) Character))} [^{::t/ann (t/U t/Int (t/Atom1 t/Int) Character)} item (distinct items)] (list item))
               (all-different? items) (if (= t cnt) 
                                         (list (seq items))
@@ -516,18 +500,18 @@ collected."
                   (t/ann-form
                     (fn [v-seqs]
                       (loop [^{::t/ann t/Int} i (dec (count v-seqs)), ^{::t/ann (t/Vec (t/Coll t/Int))} v-seqs v-seqs]
-                        (if (= i -1) nil
+                        (if (= i -1) nil 
                           (if-let [rst (next (v-seqs i))]
                             (assoc v-seqs i rst)
                             (recur (dec i) (assoc v-seqs i (v-original-seqs i)))))))
-                    [(t/Vec (t/Coll t/Int)) :-> (t/U nil (t/Vec (t/Coll t/Int)))])
+                    [(t/Vec (t/Coll t/Int)) :-> (t/Vec (t/Coll t/Int))])
                   ]
               (when v-seqs
                 (cons (map first v-seqs)
                       (lazy-seq (step (increment v-seqs)))))))
-          [(t/Vec (t/Vec t/Int)) :-> (t/Coll (t/Coll t/Int))])
+          [(t/Vec (t/Coll t/Int)) :-> (t/Coll (t/Coll t/Int))])
         ]
-    (when (every? seq seqs)
+    (when (every? (t/inst seq t/Any) seqs)
       (lazy-seq (step v-original-seqs)))))
 
 
@@ -547,7 +531,7 @@ collected."
       (let [vj (v j),
             l (loop [^{::t/ann t/Int} i (dec len)]
                 (if (< vj (v i)) i (recur (dec i))))]
-        (loop [^{::t/ann (t/Vec t/Int)} v (assoc v j (v l) l vj), ^{::t/ann t/Int} k (inc j), ^{::t/ann t/Int} l (dec len)]
+        (loop [^{::t/ann (t/Vec (t/I a t/Num))} v (assoc v j (v l) l vj), ^{::t/ann t/Int} k (inc j), ^{::t/ann t/Int} l (dec len)]
           (if (< k l)
             (recur (assoc v k (v l) l (v k)) (inc k) (dec l))
             v))))))
@@ -580,8 +564,12 @@ In prior versions of the combinatorics library, there were two similar functions
         v (vec (distinct l)),
         indices (apply concat
                        (for ^{::t/ann (t/Coll t/Int)} [^{::t/ann t/Int} i (range (count v))]
-                         (repeat (f (v i)) i)))]
-    (map (partial map v) (lex-permutations indices))))
+                         (let [in (f (v i))]
+                           (assert in)
+                           (repeat in i))))]
+    (map (t/fn [c]
+           (map v c))
+         (lex-permutations indices))))
 
 (defn permutations
   "All the distinct permutations of items, lexicographic by index 
@@ -605,7 +593,7 @@ In prior versions of the combinatorics library, there were two similar functions
 (defn- factorial [n]
   {:pre [(integer? n) (not (neg? n))]}
   ; (Long/valueOf (long 1)) eliminates loop auto-boxing warning, in a way compatible with Clojure 1.2
-  (loop [^{::t/ann t/Int} acc (Long/valueOf (long 1)), ^{::t/ann t/Int} n n] 
+  (loop [^{::t/ann t/Int} acc (t/cast t/Int (Long/valueOf (long 1))), ^{::t/ann t/Int} n n] 
     (if (zero? n) acc (recur (mult acc n) (dec n)))))
 
 (defn- factorial-numbers
@@ -621,9 +609,10 @@ expressed as a list of 'digits'"
         (recur q (cons r digits) (inc divisor))))))
 
 (defn- remove-nth [l n]
-  (loop [^{::t/ann (t/Vec t/Int)} acc [], ^{::t/ann (t/Coll t/Int)} l l, ^{::t/ann t/Int} n n]
+  (loop [^{::t/ann (t/Vec a)} acc [], ^{::t/ann (t/Coll a)} l l, ^{::t/ann t/Int} n n]
     (if (zero? n) (into acc (rest l))
-      (recur (conj acc (first l)) (rest l) (dec n)))))
+      (do (assert (seq l))
+          (recur (conj acc (first l)) (rest l) (dec n))))))
 
 (defn- nth-permutation-distinct
   "Input should be a sorted sequential collection l of distinct items, 
@@ -636,10 +625,11 @@ output is nth-permutation (0-based)"
         fact-nums (factorial-numbers n)]
     (loop [^{::t/ann (t/Coll t/Int)} indices (concat (repeat (- length (count fact-nums)) 0)
                            fact-nums),
-           ^{::t/ann (t/Coll t/Int)} l l
-           ^{::t/ann (t/Vec t/Int)} perm []]
+           ^{::t/ann (t/Coll (t/I a t/Num))} l l
+           ^{::t/ann (t/Vec (t/I a t/Num))} perm []]
       (if (empty? indices) perm
         (let [i (first indices),
+              _ (assert (sequential? l))
               item (nth l i)]
           (recur (rest indices) (remove-nth l i) (conj perm item))))))) 
 
@@ -647,7 +637,11 @@ output is nth-permutation (0-based)"
 
 (defn- count-permutations-from-frequencies [freqs]
   (let [counts (vals freqs)]
-    (reduce / (factorial (apply + counts))
+    (reduce (t/fn [a :- t/Num
+                   b :- t/Num]
+              {:post [(integer? %)]}
+              (/ a b))
+            (factorial (apply + counts))
             (map factorial counts ))))
 
 (defn count-permutations
@@ -662,7 +656,7 @@ output is nth-permutation (0-based)"
 lexicographic permutations you get by varying the first item"
   [freqs]
   (reductions + 0
-              (for ^{::t/ann t/Int} [^{::t/ann '[t/Int t/Int]} [k v] freqs]
+              (for ^{::t/ann t/Int} [^{::t/ann '[t/Any t/Int]} [k v] freqs]
                 (count-permutations-from-frequencies (assoc freqs k (dec v))))))
 
 ;; Explanation of initial-perm-numbers:
@@ -678,10 +672,14 @@ lexicographic permutations you get by varying the first item"
   [perm-numbers n]
   (loop [^{::t/ann (t/Coll t/Int)} perm-numbers perm-numbers
          ^{::t/ann t/Int} index 0]
-    (if (and (<= (first perm-numbers) n)
-             (< n (second perm-numbers)))
-      [index (- n (first perm-numbers))]
-      (recur (rest perm-numbers) (inc index)))))
+    (let [fst (first perm-numbers)
+          snd (second perm-numbers)]
+      (assert (integer? fst))
+      (assert (integer? snd))
+      (if (and (<= fst n)
+               (< n snd))
+        [index (- n fst)]
+        (recur (rest perm-numbers) (inc index))))))
 
 ;; Explanation of index-remainder:
 ; (index-remainder [0 6 9 11] 8) => [1 2]
@@ -698,7 +696,7 @@ lexicographic permutations you get by varying the first item"
   "Input is a non-negative base 10 integer n, and a sorted frequency map freqs.
 Output is a list of 'digits' in this wacky duplicate factorial number system" 
   [n freqs]
-  (loop [^{::t/ann t/Int} n n, ^{::t/ann (t/Vec t/Int)} digits [], ^{::t/ann (t/Map t/Int t/Int)} freqs freqs]
+  (loop [^{::t/ann t/Int} n n, ^{::t/ann (t/Vec t/Int)} digits [], ^{::t/ann (t/Map a t/Int)} freqs freqs]
     (if (zero? n) (into digits (repeat (apply + (vals freqs)) 0))
       (let [[index remainder] 
             (index-remainder (initial-perm-numbers freqs) n)]
@@ -713,9 +711,9 @@ output is nth-permutation (0-based)"
   (assert-with-message (< n (count-permutations l)) 
                        (format "%s is too large. Input has only %s permutations."
                                (str n) (str (count-permutations l))))
-  (loop [^{::t/ann (t/Map t/Int t/Int)} freqs (into (sorted-map) (frequencies l)),
+  (loop [^{::t/ann (t/Map (t/I t/Num a) t/Int)} freqs (into (sorted-map) (frequencies l)),
          ^{::t/ann (t/Coll t/Int)} indices (factorial-numbers-with-duplicates n freqs)
-         ^{::t/ann (t/Vec t/Int)} perm []]
+         ^{::t/ann (t/Vec (t/I t/Num a))} perm []]
     (if (empty? indices) perm
       (let [i (first indices),
             item (nth (keys freqs) i)]
@@ -740,7 +738,7 @@ output is nth-permutation (0-based)"
             f (frequencies items),
             indices (apply concat
                            (for ^{::t/ann (t/Coll t/Int)} [^{::t/ann t/Int} i (range (count v))]
-                             (repeat (f (v i)) i)))]
+                             (repeat (t/cast t/Int (f (v i))) i)))]
         (vec (map v (nth-permutation-duplicates indices n)))))))
 
 (defn drop-permutations
@@ -751,19 +749,24 @@ output is nth-permutation (0-based)"
     (= n (count-permutations items)) ()
     :else
     (if (sorted-numbers? items)
-      (if (all-different? items) 
-        (vec-lex-permutations (nth-permutation-distinct items n))
-        (vec-lex-permutations (nth-permutation-duplicates items n)))
+      (let [r (if (all-different? items) 
+                (vec-lex-permutations (nth-permutation-distinct items n))
+                (vec-lex-permutations (nth-permutation-duplicates items n)))]
+        (assert r)
+        r)
       (if (all-different? items)
         (let [v (vec items),
               perm-indices (nth-permutation-distinct (range (count items)) n)]
-          (map (partial map v) (vec-lex-permutations perm-indices)))
+          (map (t/fn [c :- (t/Vec t/Int)]
+                 (map v c))
+               (vec-lex-permutations perm-indices)))
         (let [v (vec (distinct items)),
               f (frequencies items),
               indices (apply concat
                              (for ^{::t/ann (t/Coll t/Int)} [^{::t/ann t/Int} i (range (count v))]
-                               (repeat (f (v i)) i)))]
-          (map (partial map v) 
+                               (repeat (t/cast t/Int (f (v i))) i)))]
+          (map (t/fn [c :- (t/Vec t/Int)]
+                 (map v c))
                (vec-lex-permutations
                  (nth-permutation-duplicates indices n))))))))
 
@@ -809,7 +812,7 @@ so that we can memoize over a series of calls."
     (count-combinations-unmemoized items t)))
 
 (defn- expt-int [base pow]
-  (loop [^{::t/ann t/Int} n pow, ^{::t/ann t/Int} y (Long/valueOf (long 1)), ^{::t/ann t/Int} z base]
+  (loop [^{::t/ann t/Int} n pow, ^{::t/ann t/Int} y (t/cast t/Int (Long/valueOf (long 1))), ^{::t/ann t/Int} z base]
     (let [t (even? n), n (quot n 2)]
       (cond
        t (recur n y (mult z z))
@@ -856,6 +859,7 @@ represented by freqs"
     (if (or (zero? n) (empty? freqs)) 
       (into comb (take t (apply concat (for ^{::t/ann (t/Coll t/Int)} [^{::t/ann '[t/Int t/Int]} [k v] freqs] (repeat v k)))))
       (let [first-key (first (keys freqs)),
+            _ (assert (integer? first-key))
             remove-one-key (dec-key freqs first-key)
             dc-dt (count-combinations-from-frequencies remove-one-key (dec t))]
         (if (< n dc-dt)
@@ -875,7 +879,7 @@ represented by freqs"
             f (frequencies items),
             indices (apply concat
                            (for ^{::t/ann (t/Coll t/Int)} [^{::t/ann t/Int} i (range (count v))]
-                             (repeat (f (v i)) i)))
+                             (repeat (t/cast t/Int (f (v i))) i)))
             indices-freqs (into (sorted-map) (frequencies indices))]
         (vec (map v (nth-combination-freqs indices-freqs t n)))))))
 
@@ -905,7 +909,7 @@ represented by freqs"
 
 (defn- permutation-index-distinct
   [l]
-  (loop [^{::t/ann (t/Coll (t/U t/Int Character))} l l, ^{::t/ann t/Int} index (Long/valueOf (long 0)), ^{::t/ann t/Int} n (dec (count l))]
+  (loop [^{::t/ann (t/Coll (t/U t/Int Character))} l l, ^{::t/ann t/Int} index (t/cast Long (Long/valueOf (long 0))), ^{::t/ann t/Int} n (dec (count l))]
     (if (empty? l) index
       (recur (rest l) 
              (+ index (* (factorial n) (list-index (sort l) (first l))))
@@ -913,7 +917,7 @@ represented by freqs"
 
 (defn- permutation-index-duplicates
   [l]
-  (loop [^{::t/ann (t/Coll (t/U t/Int Character))} l l, ^{::t/ann t/Int} index (Long/valueOf (long 0)), ^{::t/ann (t/Map (t/U t/Int Character) t/Int)} freqs (into (sorted-map) (frequencies l))]
+  (loop [^{::t/ann (t/Coll (t/U t/Int Character))} l l, ^{::t/ann t/Int} index (t/cast Long (Long/valueOf (long 0))), ^{::t/ann (t/Map (t/U t/Int Character) t/Int)} freqs (into (sorted-map) (frequencies l))]
     (if (empty? l) index
       (recur (rest l)
              (reduce + index 
@@ -992,15 +996,15 @@ represented by freqs"
                             (- s
                                (+ (b j)
                                   (reify-bool (= (a j) (b j))))))
-                        [a b] (loop [^{::t/ann '[t/Int t/Int t/Int]} a a
-                                     ^{::t/ann '[t/Int t/Int t/Int]} b b
+                        [a b] (loop [^{::t/ann (t/Vec t/Int)} a a
+                                     ^{::t/ann (t/Vec t/Int)} b b
                                      ^{::t/ann t/Int} i (inc j)
                                      ^{::t/ann t/Int} current-max (+ (b j)
                                                     (reify-bool (== (b j) (a j))))]
                                 (cond
                                   (== i n) [a b]
                                   
-                                  (and s (> i (- (- n x) 1)))
+                                  (and s (> i (- (- n (t/cast t/Int x)) 1)))
                                   (let [new-a-i (+ (- i n) s)]
                                     (recur (assoc a i new-a-i)
                                            (assoc b i current-max)
@@ -1092,8 +1096,8 @@ represented by freqs"
                                     [c u v]
                                     (recur (inc j)
                                            (assoc c j (inc j))
-                                           (assoc u j (multiset (inc j)))
-                                           (assoc v j (multiset (inc j))))))
+                                           (assoc u j (t/cast t/Int (multiset (inc j))))
+                                           (assoc v j (t/cast t/Int (multiset (inc j)))))))
                         a 0, b m, l 0
                         f (assoc f 0 0, 1 m)
                         stack ()]
@@ -1164,10 +1168,10 @@ represented by freqs"
                           (recur (rest ks)
                                  (assoc v k (u k))))))
                   min-partitions-after-this (if s (- s (inc l)) 0)
-                  amount-to-dec (if s (max 0 (- min-partitions-after-this diff-uv)) 0)
+                  amount-to-dec (if s (max 0 (- min-partitions-after-this (t/cast t/Int diff-uv))) 0)
                   v (if (= amount-to-dec 0)
                       v
-                      (loop [^{::t/ann t/Int} k-1 (dec b), ^{::t/ann '[t/Int t/Int]} v v
+                      (loop [^{::t/ann t/Int} k-1 (dec b), ^{::t/ann (t/Vec t/Int)} v v
                              ^{::t/ann t/Int} amount amount-to-dec]
                         (let [vk (v k-1)]
                           (if (> amount vk)
@@ -1204,7 +1208,7 @@ represented by freqs"
         (= N 1) `(([~(first items)]))
         :else (let [start-multiset (into {} (for ^{::t/ann '[t/Int t/Int]} [^{::t/ann t/Int} i (range M)
                                                   :let [j (inc i)]]
-                                              [j (freqs (ditems i))]))
+                                              [j (t/cast t/Int (freqs (ditems i)))]))
                     parts (multiset-partitions-M start-multiset to from)]
                 (->> multiset
                   (mapcat (t/ann-form
