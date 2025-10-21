@@ -3,6 +3,7 @@
   <artifactId>math.combinatorics</artifactId>
   <version>0.3.1-SNAPSHOT</version>
   <name>math.combinatorics</name>
+  <description>Efficient, functional algorithms for generating lazy sequences for common combinatorial functions.</description>
 
   <parent>
     <groupId>org.clojure</groupId>
