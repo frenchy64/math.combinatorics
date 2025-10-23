@@ -625,7 +625,7 @@ represented by freqs"
 
 (defn- permutation-index-distinct
   [l]
-  (loop [l l, index #?(:clj (Long/valueOf 0) :cljs 0), n (dec (count l))]
+  (loop [l l, index #?(:clj (Long/valueOf 0) :default 0), n (dec (count l))]
     (if (empty? l) index
       (recur (rest l) 
              (+' index (*' (factorial n) (list-index (sort l) (first l))))
