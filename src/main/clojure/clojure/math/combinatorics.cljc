@@ -328,7 +328,7 @@ In prior versions of the combinatorics library, there were two similar functions
 
 (defn- factorial [n]
   {:pre [(integer? n) (not (neg? n))]}
-  (loop [acc #?(:clj (Long/valueOf 1) :cljs 1), n n]
+  (loop [acc #?(:clj (Long/valueOf 1) :default 1), n n]
     (if (zero? n) acc (recur (*' acc n) (dec n)))))
 
 (defn- factorial-numbers
@@ -530,7 +530,7 @@ so that we can memoize over a series of calls."
     (count-combinations-unmemoized items t)))
 
 (defn- expt-int [base pow]
-  (loop [n pow, y #?(:clj (Long/valueOf 1) :cljs 1), z base]
+  (loop [n pow, y #?(:clj (Long/valueOf 1) :default 1), z base]
     (let [t (even? n), n (quot n 2)]
       (cond
        t (recur n y (*' z z))
@@ -633,7 +633,7 @@ represented by freqs"
 
 (defn- permutation-index-duplicates
   [l]
-  (loop [l l, index #?(:clj (Long/valueOf 0) :cljs 0), freqs (into (sorted-map) (frequencies l))]
+  (loop [l l, index #?(:clj (Long/valueOf 0) :default 0), freqs (into (sorted-map) (frequencies l))]
     (if (empty? l) index
       (recur (rest l)
              (reduce +' index
@@ -671,13 +671,14 @@ represented by freqs"
   (let [item (vec index)]
     (assoc vec index (f item))))
 
-#?(:clj
+#?(:cljs
+    (defn- reify-bool [statement]
+      (if statement 1 0))
+:default
 (defmacro ^:private reify-bool
   [statement]
   `(if ~statement 1 0))
-   :cljs
-    (defn- reify-bool [statement]
-      (if statement 1 0)))
+   )
 
 (defn- init
   [n s]
